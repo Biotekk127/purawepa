@@ -13,27 +13,25 @@
 }
 
 :root {
-  /* ---- color: brand (constant across both acts) ----
-     PALETTE PREVIEW — warm sand / navy / aqua / terracotta / charcoal
-     (temporary swap of token values only; roles unchanged) ---- */
-  --red: #e4572e;
-  --red-dark: #c24a22;
+  /* ---- color: brand (constant across both acts) ---- */
+  --red: #e5341e;
+  --red-dark: #b8260f;
 
   /* ---- color: act 1 — dusk street (dark) ---- */
-  --ink: #172121;
-  --ink-raised: #202927;
-  --navy: #123c69;
-  --navy-bright: #1f5a96;
-  --text-on-ink: #f4ede1;
-  --text-on-ink-muted: #b4a89a;
+  --ink: #130f0c;
+  --ink-raised: #1c1712;
+  --navy: #152447;
+  --navy-bright: #2c4a86;
+  --text-on-ink: #f6f1e7;
+  --text-on-ink-muted: #b6aca0;
 
   /* ---- color: act 2 — window light (warm/light) ---- */
-  --paper: #f4ede1;
-  --paper-raised: #9dd9d2;
-  --amber: #9dd9d2;
-  --amber-dark: #6fb8ae;
-  --text-on-paper: #172121;
-  --text-on-paper-muted: #6a706a;
+  --paper: #fbf7ef;
+  --paper-raised: #f3ecdd;
+  --amber: #f5a623;
+  --amber-dark: #c97e0f;
+  --text-on-paper: #181310;
+  --text-on-paper-muted: #6b6259;
 
   /* ---- type ---- */
   --font: "Archivo", system-ui, sans-serif;
