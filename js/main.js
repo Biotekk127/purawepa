@@ -80,52 +80,37 @@
   }
 
   /* -----------------------------------------------------------
-     the approach sequence — pinned zoom toward the window
+     the approach sequence — pinned camera flight through a real
+     3D truck model toward its serving window (see truck-scene.js)
      ----------------------------------------------------------- */
-  var truckRig = document.getElementById("truck-rig");
+  var canvas = document.getElementById("truck-canvas");
   var bgScene = document.getElementById("bg-scene");
   var windowCover = document.getElementById("truck-window-cover");
+  var truckScene = window.PuraWepaTruck.init(canvas);
 
-  // local center of the serving window within the 600x335 truck-rig photo
-  var WX = 171, WY = 114;
-
-  function frame(scale, targetXRatio, targetYRatio) {
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
-    var targetX = vw * targetXRatio;
-    var targetY = vh * targetYRatio;
-    return {
-      scale: scale,
-      x: targetX - WX * scale,
-      y: targetY - WY * scale
-    };
-  }
-
-  function computeEndScale() {
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
-    var overshoot = 1.06;
-    var scaleForWidth = (vw * overshoot) / 112;
-    var scaleForHeight = (vh * overshoot) / 78;
-    return Math.max(scaleForWidth, scaleForHeight);
+  // remaps raw scroll progress (0-1) to the camera-flight's own 0-1
+  // range, with a smoothstep ease, so the flight has room to start
+  // after the headline fades and finish before the whiteout begins
+  function cameraProgress(t) {
+    var start = 0.08, end = 0.82;
+    var p = (t - start) / (end - start);
+    p = Math.max(0, Math.min(1, p));
+    return p * p * (3 - 2 * p);
   }
 
   if (reduceMotion) {
     // static, intentional single frame — no scrub, no pin
-    var still = frame(computeEndScale() * 0.16, 0.62, 0.56);
-    gsap.set(truckRig, { x: still.x, y: still.y, scale: still.scale, transformOrigin: "0px 0px" });
+    truckScene.setProgress(0.22);
     gsap.set(bgScene, { scale: 1, filter: "blur(0px) brightness(1)" });
   } else {
     var st; // holds the current ScrollTrigger instance so we can kill/rebuild on resize
 
     var build = function () {
       if (st) st.kill();
-      gsap.killTweensOf([truckRig, bgScene, windowCover, ".hero-copy", ".scroll-cue"]);
+      gsap.killTweensOf([bgScene, windowCover, ".hero-copy", ".scroll-cue"]);
 
-      var start = frame(0.48, 0.66, 0.58);
-      var end = frame(computeEndScale(), 0.5, 0.5);
-
-      gsap.set(truckRig, { x: start.x, y: start.y, scale: start.scale, transformOrigin: "0px 0px" });
+      truckScene.resize();
+      truckScene.setProgress(0);
       gsap.set(bgScene, { scale: 1, filter: "blur(0px) brightness(1)" });
       gsap.set(windowCover, { opacity: 0, scale: 0.6 });
       gsap.set(".hero-copy, .scroll-cue", { opacity: 1, y: 0 });
@@ -133,12 +118,6 @@
       var tl = gsap.timeline({ paused: true, defaults: { ease: "none" } });
 
       tl.to(".hero-copy, .scroll-cue", { opacity: 0, y: -40, duration: 0.12 }, 0.1);
-
-      tl.fromTo(truckRig,
-        { x: start.x, y: start.y, scale: start.scale },
-        { x: end.x, y: end.y, scale: end.scale, duration: 0.68 },
-        0.1
-      );
 
       tl.fromTo(bgScene,
         { scale: 1, filter: "blur(0px) brightness(1)" },
@@ -160,7 +139,10 @@
         end: "bottom bottom",
         pin: ".pin-inner",
         scrub: 1,
-        animation: tl
+        animation: tl,
+        onUpdate: function (self) {
+          truckScene.setProgress(cameraProgress(self.progress));
+        }
       });
     };
 

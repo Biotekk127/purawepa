@@ -29,12 +29,11 @@
     <!-- background: Old San Juan street photo (parallax / blur / darken layer) -->
     <img id="bg-scene" src="assets/img/hero-bg.jpg" alt="" aria-hidden="true" />
 
-    <!-- the truck (independently transformed / zoomed toward its window) -->
-    <div id="truck-rig" aria-hidden="true">
-      <img src="assets/img/food-truck.jpg" width="600" height="335" alt="" />
-      <!-- serving window cover (whites out as the camera lands, before Act 2 begins) -->
-      <div id="truck-window-cover"></div>
-    </div>
+    <!-- the truck: a real 3D model (Three.js), not a photo being zoomed —
+         the camera flies through actual geometry toward its window -->
+    <canvas id="truck-canvas" aria-hidden="true"></canvas>
+    <!-- serving window cover (whites out as the camera lands, before Act 2 begins) -->
+    <div id="truck-window-cover"></div>
 
     <!-- hero copy -->
     <div class="hero-copy">
@@ -145,6 +144,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="js/truck-scene.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

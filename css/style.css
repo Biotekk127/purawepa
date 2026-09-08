@@ -113,31 +113,25 @@ a:focus-visible {
   will-change: transform, filter;
 }
 
-#truck-rig {
+#truck-canvas {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 600px;
-  height: 335px;
-  transform-origin: 0px 0px;
-  will-change: transform;
-}
-#truck-rig img {
+  right: 0;
+  width: 62%;
+  height: 100%;
   display: block;
-  width: 600px;
-  height: 335px;
-  border-radius: 6px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
 }
 #truck-window-cover {
   position: absolute;
-  left: 101px;
-  top: 44px;
-  width: 140px;
-  height: 140px;
+  left: 69%;
+  top: 50%;
+  width: 42vmin;
+  height: 42vmin;
+  margin: -21vmin 0 0 -21vmin;
   border-radius: 50%;
   background: var(--paper);
   opacity: 0;
+  z-index: 1;
 }
 
 .hero-copy {
