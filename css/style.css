@@ -250,92 +250,185 @@ a:focus-visible {
   margin: 0 0 var(--sp-16);
   max-width: 16ch;
 }
+#menu > .dish-card--featured,
+#menu > .menu-category {
+  max-width: 1400px;
+  margin-inline: auto;
+}
+#menu > .dish-card--featured { margin-bottom: var(--sp-16); }
+#menu > .menu-category + .menu-category { margin-top: var(--sp-16); }
 
-.menu-grid {
+.menu-category__title {
+  font-weight: 800;
+  font-size: var(--size-display-m);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--sp-6);
+}
+
+.dish-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: var(--sp-6);
 }
-.menu-card {
-  grid-column: span 3;
-  background: var(--ink);
+.dish-grid--compact {
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 420px));
+  justify-content: start;
+}
+
+/* the photo glass card */
+.dish-card {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  isolation: isolate;
+  transition: transform 0.5s var(--ease-out), opacity 0.4s ease, filter 0.4s ease;
+}
+.dish-grid.is-hovering .dish-card { opacity: 0.45; filter: saturate(0.7); }
+.dish-grid.is-hovering .dish-card.is-hovered { opacity: 1; filter: none; transform: translateY(-6px); }
+
+.dish-card__media { position: absolute; inset: 0; }
+.dish-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform 0.6s var(--ease-out);
+}
+.dish-grid.is-hovering .dish-card.is-hovered .dish-card__photo,
+.dish-card:hover .dish-card__photo,
+.dish-card:focus-within .dish-card__photo {
+  transform: scale(1.08);
+}
+
+.dish-card__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--sp-4) var(--sp-6);
+  background: rgba(19, 15, 12, 0.55);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-top: 1px solid rgba(246, 241, 231, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
   color: var(--text-on-ink);
+}
+.dish-card__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); }
+.dish-card__name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+  line-height: 1.25;
+}
+.dish-card__price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--amber);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.dish-card__desc {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-on-ink-muted);
+  margin: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s var(--ease-out), opacity 0.3s var(--ease-out);
+}
+.dish-grid.is-hovering .dish-card.is-hovered .dish-card__desc,
+.dish-card:focus-within .dish-card__desc {
+  max-height: 4em;
+  opacity: 1;
+}
+@media (hover: none) {
+  .dish-card__desc { max-height: 4em; opacity: 1; }
+}
+
+/* stagger the reveal of cards within a row */
+.dish-grid > .dish-card:nth-child(1) { transition-delay: 0s; }
+.dish-grid > .dish-card:nth-child(2) { transition-delay: 0.08s; }
+.dish-grid > .dish-card:nth-child(3) { transition-delay: 0.16s; }
+
+/* wings card — a price table + sauce pills need a solid, readable panel */
+.dish-card--wings { aspect-ratio: auto; display: flex; flex-direction: column; }
+.dish-card--wings .dish-card__media { position: relative; aspect-ratio: 4 / 3; }
+.dish-card--wings .dish-card__panel {
+  position: static;
+  background: var(--ink-raised);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-top: none;
+  padding: var(--sp-6);
+}
+.dish-card--wings .dish-card__name { font-size: 1.15rem; margin-bottom: var(--sp-2); }
+.dish-card--wings .dish-card__desc { max-height: none; opacity: 1; overflow: visible; margin-top: var(--sp-3); }
+.wing-tier-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
+.wing-tier-list__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  padding: var(--sp-1) 0;
+  border-top: 1px solid rgba(246, 241, 231, 0.1);
+}
+.wing-tier-list__row:first-child { border-top: none; }
+.wing-tier-list__row span:last-child { color: var(--amber); font-weight: 700; }
+.sauce-pills { display: flex; gap: var(--sp-2); margin-top: var(--sp-2); flex-wrap: wrap; }
+.sauce-pill {
+  font-size: var(--size-label);
+  letter-spacing: var(--tracking-label);
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-pill);
+  background: rgba(246, 241, 231, 0.12);
+  border: 1px solid rgba(246, 241, 231, 0.28);
+  color: var(--text-on-ink-muted);
+}
+
+/* signature banner */
+.dish-card--featured { aspect-ratio: 2.4 / 1; }
+.dish-card--featured .dish-card__panel {
+  position: absolute;
+  left: var(--sp-8);
+  bottom: var(--sp-8);
+  right: auto;
+  max-width: 420px;
+  border-radius: var(--radius);
+  padding: var(--sp-6);
+}
+.dish-card--featured .dish-card__desc { max-height: none; opacity: 1; overflow: visible; }
+.dish-card--featured .dish-card__price { font-size: 1.25rem; margin-top: var(--sp-2); display: block; }
+.dish-card__tag {
+  display: block;
+  font-size: var(--size-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: var(--sp-2);
+}
+.dish-card--featured .dish-card__name { font-size: var(--size-display-m); margin-bottom: var(--sp-2); }
+
+/* drinks — no photos, a clean price list */
+.menu-category--drinks {
+  background: var(--paper-raised);
   border-radius: var(--radius);
   padding: var(--sp-8);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, filter 0.4s ease;
 }
-.menu-grid.is-hovering .menu-card {
-  opacity: 0.45;
-  filter: saturate(0.7);
+.drink-list { list-style: none; margin: 0; padding: 0; }
+.drink-list__row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid rgba(24, 19, 16, 0.12);
+  font-weight: 700;
+  font-size: 1.05rem;
 }
-.menu-grid.is-hovering .menu-card.is-hovered {
-  opacity: 1;
-  filter: none;
-  transform: translateY(-6px) scale(1.015);
-}
-.menu-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(251, 247, 239, 0.08);
-  border-radius: var(--radius);
-  pointer-events: none;
-}
-.menu-card--featured {
-  grid-column: span 6;
-  background: var(--red);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: var(--sp-8);
-  padding: var(--sp-12) var(--sp-8);
-}
-.menu-card--featured h3 { font-size: var(--size-display-m); }
-.menu-card--drink { grid-column: span 2; background: var(--amber); color: var(--text-on-paper); }
-.menu-card:not(.menu-card--featured):not(.menu-card--drink) { grid-column: span 2; }
-
-.menu-card h3 {
-  font-size: 1.15rem;
-  font-weight: 800;
-  margin: var(--sp-4) 0 var(--sp-2);
-  letter-spacing: var(--tracking-tight);
-}
-.menu-card p {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0;
-  opacity: 0.85;
-  max-width: 32ch;
-}
-
-.menu-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-pill);
-  background: rgba(251, 247, 239, 0.12);
-  position: relative;
-}
-.menu-card--featured .menu-icon { width: 72px; height: 72px; background: rgba(251, 247, 239, 0.18); }
-.menu-icon::after {
-  content: "";
-  width: 46%;
-  height: 46%;
-  background: currentColor;
-  color: var(--text-on-ink);
-}
-.menu-card--drink .menu-icon::after { color: var(--text-on-paper); }
-.menu-icon[data-icon="bowl"]::after { border-radius: 0 0 60% 60%; }
-.menu-icon[data-icon="fritter"]::after { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
-.menu-icon[data-icon="turnover"]::after { clip-path: polygon(0 0, 100% 0, 0 100%); border-radius: 2px; }
-.menu-icon[data-icon="plate"]::after { border-radius: 50%; }
-.menu-icon[data-icon="tostones"]::after { border-radius: 40%; }
-.menu-icon[data-icon="fish"]::after { clip-path: polygon(0% 50%, 40% 20%, 100% 0%, 70% 50%, 100% 100%, 40% 80%); }
-.menu-icon[data-icon="cup"]::after { clip-path: polygon(15% 0%, 85% 0%, 75% 100%, 25% 100%); }
+.drink-list__row:last-child { border-bottom: 1px solid rgba(24, 19, 16, 0.12); }
 
 /* ---------------------------------------------------------------
    about
@@ -453,15 +546,22 @@ body.reduced-motion .reveal { opacity: 1; transform: none; transition: none; }
    responsive
    --------------------------------------------------------------- */
 @media (max-width: 900px) {
-  .menu-grid { grid-template-columns: repeat(2, 1fr); }
-  .menu-card,
-  .menu-card--featured,
-  .menu-card--drink,
-  .menu-card:not(.menu-card--featured):not(.menu-card--drink) { grid-column: span 2; }
   .location-grid { grid-template-columns: 1fr; gap: var(--sp-8); align-items: start; }
 }
 
 @media (max-width: 600px) {
   .hero-copy { bottom: 18vh; left: var(--sp-4); right: var(--sp-4); }
   .scroll-cue { left: var(--sp-4); }
+
+  .dish-card--featured { aspect-ratio: auto; display: flex; flex-direction: column; }
+  .dish-card--featured .dish-card__media { position: relative; aspect-ratio: 4 / 3; }
+  .dish-card--featured .dish-card__panel {
+    position: static;
+    max-width: none;
+    background: var(--ink-raised);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-top: none;
+  }
+  .menu-category--drinks { padding: var(--sp-6); }
 }

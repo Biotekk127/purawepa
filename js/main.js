@@ -40,23 +40,25 @@
   }
 
   /* -----------------------------------------------------------
-     menu card hover spotlight — hovered card comes forward,
-     the rest dim back (bianco-bianco-style focus interaction)
+     menu card hover spotlight — hovered card comes forward and
+     its photo zooms in, siblings within the same category dim
+     back (bianco-bianco-style focus interaction). Each category
+     is its own grid, so hovering a burger only dims other
+     burgers, not the whole menu.
      ----------------------------------------------------------- */
-  var menuGrid = document.querySelector(".menu-grid");
-  if (menuGrid) {
-    var menuCards = menuGrid.querySelectorAll(".menu-card");
-    menuCards.forEach(function (card) {
+  document.querySelectorAll(".dish-grid").forEach(function (grid) {
+    var cards = grid.querySelectorAll(".dish-card");
+    cards.forEach(function (card) {
       card.addEventListener("mouseenter", function () {
-        menuGrid.classList.add("is-hovering");
+        grid.classList.add("is-hovering");
         card.classList.add("is-hovered");
       });
       card.addEventListener("mouseleave", function () {
-        menuGrid.classList.remove("is-hovering");
+        grid.classList.remove("is-hovering");
         card.classList.remove("is-hovered");
       });
     });
-  }
+  });
 
   /* -----------------------------------------------------------
      scroll-reveal for everything after the pinned hero

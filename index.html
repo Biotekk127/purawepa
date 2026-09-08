@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Purawepa — Puerto Rican Street Food</title>
-<meta name="description" content="Purawepa is a Puerto Rican food truck serving mofongo, alcapurrias, pastelillos, and more — made the way abuela meant it." />
+<meta name="description" content="Purawepa is a Puerto Rican food truck serving burgers, wings, fries, and mofongo — made the way abuela meant it." />
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
 <link rel="preload" href="assets/fonts/Archivo-Variable.woff2" as="font" type="font/woff2" crossorigin />
 <meta name="theme-color" content="#130f0c" />
@@ -58,51 +58,202 @@
   <p class="eyebrow reveal">MENÚ</p>
   <h2 class="reveal">What's In The Window</h2>
 
-  <div class="menu-grid">
+  <article class="dish-card dish-card--featured reveal">
+    <div class="dish-card__media">
+      <img class="dish-card__photo" src="assets/img/menu/mofongo-chicken-boricua.jpg" alt="Chicken Boricua Mofongo, piled with seasoned chicken, bacon and melted cheese" loading="lazy" />
+    </div>
+    <div class="dish-card__panel">
+      <span class="dish-card__tag">Signature</span>
+      <h3 class="dish-card__name">Chicken Boricua Mofongo</h3>
+      <p class="dish-card__desc">Chicken, bacon, cheese, mayo-ketchup, lettuce, tomato, served with fries.</p>
+      <span class="dish-card__price">$16.00</span>
+    </div>
+  </article>
 
-    <article class="menu-card menu-card--featured reveal">
-      <span class="menu-icon" data-icon="bowl" aria-hidden="true"></span>
-      <h3>Mofongo con Camarones</h3>
-      <p>Fried green plantain mashed with garlic and pork cracklings, crowned with shrimp in a garlic-tomato sofrito.</p>
-    </article>
+  <div class="menu-category reveal">
+    <h3 class="menu-category__title">Burgers</h3>
+    <div class="dish-grid">
 
-    <article class="menu-card reveal">
-      <span class="menu-icon" data-icon="fritter" aria-hidden="true"></span>
-      <h3>Alcapurrias de Jueyes</h3>
-      <p>Green banana and yautía fritters filled with land-crab picadillo.</p>
-    </article>
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/la-clasica.jpg" alt="La Clásica cheeseburger with lettuce, tomato and pickles" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">La Clásica</h3>
+            <span class="dish-card__price">$9.00</span>
+          </div>
+          <p class="dish-card__desc">Beef patty, American cheese, lettuce, tomato, mayo-ketchup.</p>
+        </div>
+      </article>
 
-    <article class="menu-card reveal">
-      <span class="menu-icon" data-icon="turnover" aria-hidden="true"></span>
-      <h3>Pastelillos de Guayaba y Queso</h3>
-      <p>Flaky turnovers filled with guava paste and queso de hoja.</p>
-    </article>
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/el-boricua.jpg" alt="El Boricua bacon cheeseburger with fries" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">El Boricua</h3>
+            <span class="dish-card__price">$11.00</span>
+          </div>
+          <p class="dish-card__desc">Beef patty, crispy bacon, American cheese, mayo-ketchup, lettuce, tomato.</p>
+        </div>
+      </article>
 
-    <article class="menu-card reveal">
-      <span class="menu-icon" data-icon="plate" aria-hidden="true"></span>
-      <h3>Pernil al Horno</h3>
-      <p>Slow-roasted pork shoulder, skin cracked and salted, rubbed overnight in adobo.</p>
-    </article>
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/doble-wepa.jpg" alt="Doble Wepa double beef patty burger with melted cheese" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">Doble Wepa</h3>
+            <span class="dish-card__price">$13.00</span>
+          </div>
+          <p class="dish-card__desc">Double beef patty, double cheese, bacon, mayo-ketchup, lettuce, tomato, onions.</p>
+        </div>
+      </article>
 
-    <article class="menu-card reveal">
-      <span class="menu-icon" data-icon="tostones" aria-hidden="true"></span>
-      <h3>Tostones con Mojo</h3>
-      <p>Twice-fried green plantains, smashed and crisped, served with garlic mojo.</p>
-    </article>
-
-    <article class="menu-card reveal">
-      <span class="menu-icon" data-icon="fish" aria-hidden="true"></span>
-      <h3>Bacalaítos</h3>
-      <p>Salt-cod fritters, shattering-crisp at the edge, tender at the center.</p>
-    </article>
-
-    <article class="menu-card menu-card--drink reveal">
-      <span class="menu-icon" data-icon="cup" aria-hidden="true"></span>
-      <h3>Coquito</h3>
-      <p>Coconut, rum, and cinnamon. Order it cold.</p>
-    </article>
-
+    </div>
   </div>
+
+  <div class="menu-category reveal">
+    <h3 class="menu-category__title">Fries</h3>
+    <div class="dish-grid">
+
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/fries-regular.jpg" alt="Regular crispy seasoned fries" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">Regular Fries</h3>
+            <span class="dish-card__price">$4.00</span>
+          </div>
+          <p class="dish-card__desc">Crispy seasoned fries.</p>
+        </div>
+      </article>
+
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/fries-queso.jpg" alt="Queso fries drizzled with melted cheese sauce" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">Queso Fries</h3>
+            <span class="dish-card__price">$6.00</span>
+          </div>
+          <p class="dish-card__desc">Fries topped with cheese sauce.</p>
+        </div>
+      </article>
+
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/fries-loaded.jpg" alt="Boricua Loaded Fries topped with cheese and bacon" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">Boricua Loaded Fries</h3>
+            <span class="dish-card__price">$9.00</span>
+          </div>
+          <p class="dish-card__desc">Fries with cheese, bacon, mayo-ketchup, lettuce, tomato, onions.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="menu-category reveal">
+    <h3 class="menu-category__title">Wings</h3>
+    <div class="dish-grid dish-grid--compact">
+
+      <article class="dish-card dish-card--wings reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/wings.jpg" alt="Crispy fried chicken wings" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <h3 class="dish-card__name">Wings</h3>
+          <ul class="wing-tier-list">
+            <li class="wing-tier-list__row"><span>6 pc</span><span>$8.00</span></li>
+            <li class="wing-tier-list__row"><span>10 pc</span><span>$12.00</span></li>
+            <li class="wing-tier-list__row"><span>15 pc</span><span>$17.00</span></li>
+          </ul>
+          <p class="dish-card__desc">Choose your sauce, included free:</p>
+          <div class="sauce-pills">
+            <span class="sauce-pill">BBQ</span>
+            <span class="sauce-pill">Sweet &amp; Spicy</span>
+            <span class="sauce-pill">Buffalo</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="menu-category reveal">
+    <h3 class="menu-category__title">Mofongo</h3>
+    <div class="dish-grid">
+
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/mofongo-classic.jpg" alt="Classic Mofongo topped with cheese sauce" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">Classic Mofongo</h3>
+            <span class="dish-card__price">$12.00</span>
+          </div>
+          <p class="dish-card__desc">Mofongo with cheese sauce, served with fries.</p>
+        </div>
+      </article>
+
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/mofongo-chicken.jpg" alt="Chicken Mofongo with cheese and bacon" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">Chicken Mofongo</h3>
+            <span class="dish-card__price">$14.00</span>
+          </div>
+          <p class="dish-card__desc">Chicken, cheese and bacon, served with fries.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="menu-category reveal">
+    <h3 class="menu-category__title">Dessert</h3>
+    <div class="dish-grid dish-grid--compact">
+
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <img class="dish-card__photo" src="assets/img/menu/chocolate-volcano.jpg" alt="Chocolate Volcano molten cake with vanilla ice cream" loading="lazy" />
+        </div>
+        <div class="dish-card__panel">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name">Chocolate Volcano</h3>
+            <span class="dish-card__price">$7.00</span>
+          </div>
+          <p class="dish-card__desc">Molten chocolate cake with vanilla or chocolate ice cream.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="menu-category menu-category--drinks reveal">
+    <h3 class="menu-category__title">Drinks</h3>
+    <ul class="drink-list">
+      <li class="drink-list__row"><span>Coca-Cola</span><span>$2.50</span></li>
+      <li class="drink-list__row"><span>Diet Coke</span><span>$2.50</span></li>
+      <li class="drink-list__row"><span>Sprite</span><span>$2.50</span></li>
+      <li class="drink-list__row"><span>Malta</span><span>$2.75</span></li>
+      <li class="drink-list__row"><span>Piña Buena</span><span>$2.75</span></li>
+      <li class="drink-list__row"><span>Water</span><span>$1.50</span></li>
+    </ul>
+  </div>
+
 </section>
 
 <section id="about">
