@@ -50,23 +50,6 @@
       onPlaneReady();
     });
 
-    // soft contact shadow so the truck reads as grounded
-    var shadowGroup = new THREE.Group();
-    [
-      { r: 3.0, o: 0.1 },
-      { r: 2.2, o: 0.12 },
-      { r: 1.5, o: 0.14 }
-    ].forEach(function (ring, i) {
-      var disc = new THREE.Mesh(
-        new THREE.CircleGeometry(ring.r, 32),
-        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: ring.o, depthWrite: false })
-      );
-      disc.rotation.x = -Math.PI / 2;
-      disc.position.set(0, 0.02 + i * 0.002, 0.5);
-      shadowGroup.add(disc);
-    });
-    group.add(shadowGroup);
-
     return { windowWorld: windowWorld, normal: normal };
   }
 
