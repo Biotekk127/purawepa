@@ -1,206 +1,114 @@
 /* ============================================================
-   Purawepa hero truck — an actual 3D model (Three.js primitives
-   + canvas decals), not a photo being scaled. The camera flies
-   through real geometry toward the serving window, so parallax
-   between the cab, wheels and window frame is real, not faked
-   by a 2D pan/zoom on a flat image.
+   Purawepa hero truck — the real truck photo mapped onto a plane
+   positioned in an actual 3D scene, with a camera that genuinely
+   flies through space toward it. This keeps the truck itself
+   fully photorealistic (it IS the photo) while still giving real
+   perspective/parallax against the separately-depth-positioned
+   background as the camera moves — not a flat 2D scale/zoom.
+   The photo's edges are feathered at runtime so it reads as part
+   of the scene rather than a rectangle pasted on top of it.
    ============================================================ */
 (function () {
   "use strict";
 
-  function makeWordmarkTexture() {
-    var canvas = document.createElement("canvas");
-    canvas.width = 1024;
-    canvas.height = 512;
-    var ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#f7f2e7";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "alphabetic";
-    ctx.font = "800 168px Arial, sans-serif";
-    ctx.fillText("PURA", 40, 230);
-    ctx.fillText("WEPA", 40, 420);
-    var tex = new THREE.CanvasTexture(canvas);
-    tex.needsUpdate = true;
-    return tex;
+  // crop rect within the 1800x1004 source photo — tight around the truck
+  // itself so as little as possible of ITS OWN background (a different
+  // city skyline) shows up next to the Old San Juan street behind it
+  var CROP = { x: 90, y: 90, w: 1650, h: 870 };
+  var PLANE_ASPECT = CROP.w / CROP.h;
+  var PLANE_WIDTH = 6.4;
+  var PLANE_HEIGHT = PLANE_WIDTH / PLANE_ASPECT;
+  var PLANE_ROTATION_Y = 0.3; // radians — angles the photo in 3D so the camera's approach reads as real depth, not a flat billboard
+
+  // serving window's position as a fraction of the CROPPED frame
+  var WINDOW_FRACTION = { x: 0.251, y: 0.3 };
+
+  function loadFeatheredTexture(url, onReady) {
+    var img = new Image();
+    img.onload = function () {
+      var w = CROP.w, h = CROP.h;
+      var canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, CROP.x, CROP.y, w, h, 0, 0, w, h);
+
+      // feather a thin rectangular border to transparent so the photo's
+      // edge dissolves into the scene instead of reading as a sticker —
+      // a circular vignette was tried first but washed out the whole
+      // truck on a frame this wide, so this fades only the true edges
+      ctx.globalCompositeOperation = "destination-in";
+      var margin = 0.05;
+      var gx = ctx.createLinearGradient(0, 0, w, 0);
+      gx.addColorStop(0, "rgba(255,255,255,0)");
+      gx.addColorStop(margin, "rgba(255,255,255,1)");
+      gx.addColorStop(1 - margin, "rgba(255,255,255,1)");
+      gx.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = gx;
+      ctx.fillRect(0, 0, w, h);
+      var gy = ctx.createLinearGradient(0, 0, 0, h);
+      gy.addColorStop(0, "rgba(255,255,255,0)");
+      gy.addColorStop(margin, "rgba(255,255,255,1)");
+      gy.addColorStop(1 - margin, "rgba(255,255,255,1)");
+      gy.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = gy;
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = "source-over";
+
+      var tex = new THREE.CanvasTexture(canvas);
+      if ("colorSpace" in tex) tex.colorSpace = THREE.SRGBColorSpace;
+      else tex.encoding = THREE.sRGBEncoding;
+      tex.needsUpdate = true;
+      onReady(tex);
+    };
+    img.src = url;
   }
 
-  function makeFlameTexture() {
-    var canvas = document.createElement("canvas");
-    canvas.width = 256;
-    canvas.height = 256;
-    var ctx = canvas.getContext("2d");
-    var grad = ctx.createLinearGradient(0, 256, 0, 0);
-    grad.addColorStop(0, "#ff2d6b");
-    grad.addColorStop(0.5, "#ff7a1a");
-    grad.addColorStop(1, "#ffce45");
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = 12;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(130, 236);
-    ctx.bezierCurveTo(58, 200, 55, 118, 112, 60);
-    ctx.bezierCurveTo(98, 104, 132, 108, 126, 50);
-    ctx.bezierCurveTo(172, 92, 196, 156, 152, 198);
-    ctx.bezierCurveTo(192, 186, 204, 144, 198, 104);
-    ctx.bezierCurveTo(224, 148, 214, 210, 150, 234);
-    ctx.closePath();
-    ctx.stroke();
-    var tex = new THREE.CanvasTexture(canvas);
-    return tex;
-  }
-
-  function buildTruck() {
+  function buildScene(scene, onPlaneReady) {
     var group = new THREE.Group();
+    scene.add(group);
 
-    var bodyMat = new THREE.MeshStandardMaterial({ color: 0x18150f, metalness: 0.12, roughness: 0.65 });
-    var trimMat = new THREE.MeshStandardMaterial({ color: 0x0e0c09, metalness: 0.15, roughness: 0.6 });
-    var chromeMat = new THREE.MeshStandardMaterial({ color: 0x9a9a9a, metalness: 0.9, roughness: 0.25 });
-    var tireMat = new THREE.MeshStandardMaterial({ color: 0x0b0b0b, roughness: 0.9 });
-    var glassMat = new THREE.MeshPhysicalMaterial({ color: 0x2a3550, roughness: 0.15, metalness: 0, transparent: true, opacity: 0.82 });
-    var interiorGlowMat = new THREE.MeshBasicMaterial({ color: 0xffd9a0 });
-    var interiorWallMat = new THREE.MeshStandardMaterial({ color: 0x2c2c2c, roughness: 0.85 });
-    var ledMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    // window position in the plane's local space (origin at plane center)
+    var localX = PLANE_WIDTH * (WINDOW_FRACTION.x - 0.5);
+    var localY = PLANE_HEIGHT * (0.5 - WINDOW_FRACTION.y);
+    var cos = Math.cos(PLANE_ROTATION_Y), sin = Math.sin(PLANE_ROTATION_Y);
+    var planePos = new THREE.Vector3(0, 1.6, 0);
+    var windowWorld = new THREE.Vector3(
+      planePos.x + localX * cos,
+      planePos.y + localY,
+      planePos.z + -localX * sin
+    );
+    var normal = new THREE.Vector3(sin, 0, cos); // plane's face normal after the Y rotation
 
-    // cargo body: width 2.2 (x), height 2.2 (y), length 5.0 (z)
-    var body = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.2, 5.0), bodyMat);
-    body.position.set(0, 2.1, -0.1);
-    group.add(body);
-
-    var roofTrim = new THREE.Mesh(new THREE.BoxGeometry(2.22, 0.16, 5.02), trimMat);
-    roofTrim.position.set(0, 3.26, -0.1);
-    group.add(roofTrim);
-
-    // cab
-    var cab = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.7, 1.6), bodyMat);
-    cab.position.set(0, 1.55, 3.2);
-    group.add(cab);
-
-    var hood = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.5, 0.9), trimMat);
-    hood.position.set(0, 0.95, 4.0);
-    group.add(hood);
-
-    var windshield = new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.0, 0.05), glassMat);
-    windshield.position.set(0, 1.9, 3.98);
-    windshield.rotation.x = -0.18;
-    group.add(windshield);
-
-    [-1, 1].forEach(function (side) {
-      var w = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.8, 1.1), glassMat);
-      w.position.set(1.01 * side, 1.85, 3.15);
-      group.add(w);
-    });
-
-    // wheels
-    var wheelGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.32, 20);
-    var hubGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.34, 14);
-    [
-      [-1.16, 0.42, 1.7], [1.16, 0.42, 1.7],
-      [-1.16, 0.42, -1.9], [1.16, 0.42, -1.9]
-    ].forEach(function (pos) {
-      var wheel = new THREE.Mesh(wheelGeo, tireMat);
-      wheel.rotation.z = Math.PI / 2;
-      wheel.position.set(pos[0], pos[1], pos[2]);
-      group.add(wheel);
-      var hub = new THREE.Mesh(hubGeo, chromeMat);
-      hub.rotation.z = Math.PI / 2;
-      hub.position.set(pos[0] * 1.02, pos[1], pos[2]);
-      group.add(hub);
-    });
-
-    // ---- serving window, +X face ----
-    var winW = 1.5, winH = 0.85;
-    var winCenter = new THREE.Vector3(1.1, 2.15, 0.9);
-
-    var interiorBack = new THREE.Mesh(new THREE.BoxGeometry(0.5, winH, winW), interiorWallMat);
-    interiorBack.position.set(0.75, winCenter.y, winCenter.z);
-    group.add(interiorBack);
-
-    var glow = new THREE.Mesh(new THREE.PlaneGeometry(winW * 0.94, winH * 0.94), interiorGlowMat);
-    glow.rotation.y = Math.PI / 2;
-    glow.position.set(1.06, winCenter.y, winCenter.z);
-    // always draws on top — it represents the truck's own interior light,
-    // and depth-sorting it against the thin frame/back-wall geometry at
-    // grazing angles was unreliable
-    interiorGlowMat.depthTest = false;
-    glow.renderOrder = 10;
-    group.add(glow);
-
-    var frameThickness = 0.06;
-    var frameTop = new THREE.Mesh(new THREE.BoxGeometry(0.06, frameThickness, winW + 0.08), chromeMat);
-    frameTop.position.set(1.13, winCenter.y + winH / 2, winCenter.z);
-    group.add(frameTop);
-    var frameBottom = frameTop.clone();
-    frameBottom.position.set(1.13, winCenter.y - winH / 2, winCenter.z);
-    group.add(frameBottom);
-    var frameLeft = new THREE.Mesh(new THREE.BoxGeometry(0.06, winH + 0.08, frameThickness), chromeMat);
-    frameLeft.position.set(1.13, winCenter.y, winCenter.z - winW / 2);
-    group.add(frameLeft);
-    var frameRight = frameLeft.clone();
-    frameRight.position.set(1.13, winCenter.y, winCenter.z + winW / 2);
-    group.add(frameRight);
-
-    var awning = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.06, winW + 0.5), trimMat);
-    awning.position.set(1.3, winCenter.y + winH / 2 + 0.22, winCenter.z);
-    awning.rotation.z = -0.12;
-    group.add(awning);
-
-    var led = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, winW + 0.3), ledMat);
-    led.position.set(1.15, winCenter.y + winH / 2 + 0.08, winCenter.z);
-    group.add(led);
-
-    var shelf = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, winW + 0.1), trimMat);
-    shelf.position.set(1.3, winCenter.y - winH / 2 - 0.1, winCenter.z);
-    group.add(shelf);
-
-    // ---- decals ----
-    var wordTex = makeWordmarkTexture();
-    var wordMat = new THREE.MeshBasicMaterial({ map: wordTex, transparent: true });
-    var wordPlane = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 0.55), wordMat);
-    wordPlane.rotation.y = Math.PI / 2;
-    wordPlane.position.set(1.111, 2.05, -1.55);
-    group.add(wordPlane);
-
-    var flameTex = makeFlameTexture();
-    var flameMat = new THREE.MeshBasicMaterial({ map: flameTex, transparent: true });
-    var flamePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.5), flameMat);
-    flamePlane.rotation.y = Math.PI / 2;
-    flamePlane.position.set(1.111, 2.65, -1.9);
-    group.add(flamePlane);
-
-    // neon diagonal stripes along the lower body
-    [0xff7a1a, 0xff2166, 0x8ee000].forEach(function (color, i) {
-      var stripe = new THREE.Mesh(
-        new THREE.BoxGeometry(0.02, 0.1, 3.4),
-        new THREE.MeshBasicMaterial({ color: color })
+    loadFeatheredTexture("assets/img/food-truck.jpg", function (tex) {
+      var plane = new THREE.Mesh(
+        new THREE.PlaneGeometry(PLANE_WIDTH, PLANE_HEIGHT),
+        new THREE.MeshBasicMaterial({ map: tex, transparent: true })
       );
-      stripe.position.set(1.111, 1.15 - i * 0.16, -0.3);
-      stripe.rotation.x = 0.42;
-      group.add(stripe);
+      plane.position.copy(planePos);
+      plane.rotation.y = PLANE_ROTATION_Y;
+      group.add(plane);
+      onPlaneReady();
     });
 
-    // soft contact shadow so the truck reads as grounded, not floating —
-    // three stacked rings of falling opacity fake a soft radial falloff
-    // (a canvas-gradient texture rendered far dimmer than authored here,
-    // so this uses flat-opacity discs instead, confirmed to render correctly)
+    // soft contact shadow so the truck reads as grounded
     var shadowGroup = new THREE.Group();
     [
-      { r: 2.6, o: 0.12 },
-      { r: 1.9, o: 0.14 },
-      { r: 1.3, o: 0.16 }
+      { r: 3.0, o: 0.1 },
+      { r: 2.2, o: 0.12 },
+      { r: 1.5, o: 0.14 }
     ].forEach(function (ring, i) {
       var disc = new THREE.Mesh(
         new THREE.CircleGeometry(ring.r, 32),
         new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: ring.o, depthWrite: false })
       );
       disc.rotation.x = -Math.PI / 2;
-      disc.position.set(0, 0.02 + i * 0.002, 0.3);
+      disc.position.set(0, 0.02 + i * 0.002, 0.5);
       shadowGroup.add(disc);
     });
     group.add(shadowGroup);
 
-    return { group: group, windowCenter: winCenter };
+    return { windowWorld: windowWorld, normal: normal };
   }
 
   function init(canvas) {
@@ -210,24 +118,12 @@
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
 
-    scene.add(new THREE.HemisphereLight(0xfff2df, 0x1a1410, 0.95));
-    var key = new THREE.DirectionalLight(0xfff0d0, 1.15);
-    key.position.set(4, 6, 5);
-    scene.add(key);
-    var rim = new THREE.DirectionalLight(0xff6fa8, 0.22);
-    rim.position.set(-4, 2, -3);
-    scene.add(rim);
-    var fill = new THREE.DirectionalLight(0xffffff, 0.35);
-    fill.position.set(-3, 3, 4);
-    scene.add(fill);
+    var layout = buildScene(scene, function () { render(); });
 
-    var built = buildTruck();
-    scene.add(built.group);
-
-    var cameraStart = { pos: new THREE.Vector3(11.5, 4.8, 12.9), look: new THREE.Vector3(0, 1.5, 0.2) };
+    var cameraStart = { pos: new THREE.Vector3(2.6, 3.2, 8.6), look: new THREE.Vector3(0, 1.7, 0) };
     var cameraEnd = {
-      pos: new THREE.Vector3(built.windowCenter.x + 1.42, built.windowCenter.y, built.windowCenter.z),
-      look: new THREE.Vector3(built.windowCenter.x - 2.0, built.windowCenter.y, built.windowCenter.z)
+      pos: layout.windowWorld.clone().addScaledVector(layout.normal, 1.35),
+      look: layout.windowWorld.clone()
     };
 
     function resize() {
@@ -239,21 +135,19 @@
     }
     resize();
 
+    function render() { renderer.render(scene, camera); }
+
     function setProgress(t) {
       t = Math.max(0, Math.min(1, t));
       camera.position.lerpVectors(cameraStart.pos, cameraEnd.pos, t);
       var look = new THREE.Vector3().lerpVectors(cameraStart.look, cameraEnd.look, t);
       camera.lookAt(look);
-      renderer.render(scene, camera);
+      render();
     }
 
     setProgress(0);
 
-    return {
-      setProgress: setProgress,
-      resize: resize,
-      render: function () { renderer.render(scene, camera); }
-    };
+    return { setProgress: setProgress, resize: resize, render: render };
   }
 
   window.PuraWepaTruck = { init: init };
