@@ -249,6 +249,7 @@ a:focus-visible {
   letter-spacing: var(--tracking-tight);
   margin: 0 0 var(--sp-16);
   max-width: 16ch;
+  color: var(--navy);
 }
 #menu > .dish-card--featured,
 #menu > .menu-category {
@@ -263,6 +264,7 @@ a:focus-visible {
   font-size: var(--size-display-m);
   letter-spacing: var(--tracking-tight);
   margin: 0 0 var(--sp-6);
+  color: var(--navy);
 }
 
 .dish-grid {
@@ -307,10 +309,10 @@ a:focus-visible {
   right: 0;
   bottom: 0;
   padding: var(--sp-4) var(--sp-6);
-  background: rgba(19, 15, 12, 0.55);
+  background: rgba(23, 33, 33, 0.55);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border-top: 1px solid rgba(246, 241, 231, 0.16);
+  border-top: 1px solid rgba(244, 237, 225, 0.16);
   display: flex;
   flex-direction: column;
   gap: var(--sp-1);
@@ -374,7 +376,7 @@ a:focus-visible {
   justify-content: space-between;
   font-size: 0.95rem;
   padding: var(--sp-1) 0;
-  border-top: 1px solid rgba(246, 241, 231, 0.1);
+  border-top: 1px solid rgba(244, 237, 225, 0.1);
 }
 .wing-tier-list__row:first-child { border-top: none; }
 .wing-tier-list__row span:last-child { color: var(--amber); font-weight: 700; }
@@ -384,8 +386,8 @@ a:focus-visible {
   letter-spacing: var(--tracking-label);
   padding: var(--sp-1) var(--sp-3);
   border-radius: var(--radius-pill);
-  background: rgba(246, 241, 231, 0.12);
-  border: 1px solid rgba(246, 241, 231, 0.28);
+  background: rgba(244, 237, 225, 0.12);
+  border: 1px solid rgba(244, 237, 225, 0.28);
   color: var(--text-on-ink-muted);
 }
 
@@ -424,11 +426,11 @@ a:focus-visible {
   display: flex;
   justify-content: space-between;
   padding: var(--sp-3) 0;
-  border-top: 1px solid rgba(24, 19, 16, 0.12);
+  border-top: 1px solid rgba(23, 33, 33, 0.12);
   font-weight: 700;
   font-size: 1.05rem;
 }
-.drink-list__row:last-child { border-bottom: 1px solid rgba(24, 19, 16, 0.12); }
+.drink-list__row:last-child { border-bottom: 1px solid rgba(23, 33, 33, 0.12); }
 
 /* ---------------------------------------------------------------
    about
@@ -443,6 +445,7 @@ a:focus-visible {
   letter-spacing: var(--tracking-tight);
   margin: 0 0 var(--sp-8);
   max-width: 14ch;
+  color: var(--navy);
 }
 .about-body {
   font-size: var(--size-body-l);
@@ -474,7 +477,7 @@ a:focus-visible {
 }
 .location-detail {
   font-size: var(--size-body-l);
-  color: rgba(251, 247, 239, 0.82);
+  color: rgba(244, 237, 225, 0.82);
   max-width: 40ch;
   margin: 0;
 }
@@ -482,11 +485,11 @@ a:focus-visible {
   display: flex;
   justify-content: space-between;
   padding: var(--sp-3) 0;
-  border-top: 1px solid rgba(251, 247, 239, 0.25);
+  border-top: 1px solid rgba(244, 237, 225, 0.25);
   font-size: 1.05rem;
   font-weight: 700;
 }
-.hours-row:last-child { border-bottom: 1px solid rgba(251, 247, 239, 0.25); }
+.hours-row:last-child { border-bottom: 1px solid rgba(244, 237, 225, 0.25); }
 .hours-row--closed { opacity: 0.6; }
 
 /* ---------------------------------------------------------------
@@ -504,6 +507,7 @@ a:focus-visible {
   font-size: var(--size-display-l);
   letter-spacing: var(--tracking-tight);
   margin: 0 0 var(--sp-8);
+  color: var(--navy);
 }
 .cta-button {
   display: inline-block;
