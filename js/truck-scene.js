@@ -1,68 +1,24 @@
 /* ============================================================
-   Purawepa hero truck — the real truck photo mapped onto a plane
-   positioned in an actual 3D scene, with a camera that genuinely
-   flies through space toward it. This keeps the truck itself
-   fully photorealistic (it IS the photo) while still giving real
-   perspective/parallax against the separately-depth-positioned
-   background as the camera moves — not a flat 2D scale/zoom.
-   The photo's edges are feathered at runtime so it reads as part
-   of the scene rather than a rectangle pasted on top of it.
+   Purawepa hero truck — a real cutout photo of the truck (true
+   alpha transparency, no background to blend or feather) mapped
+   onto a plane positioned in an actual 3D scene, with a camera
+   that genuinely flies through space toward it. The truck reads
+   as fully photorealistic (it IS the photo) while still getting
+   real perspective/parallax against the separately-depth-
+   positioned street photo behind it as the camera moves — not a
+   flat 2D scale/zoom, and no pasted-rectangle edge since the
+   source image is already a clean cutout.
    ============================================================ */
 (function () {
   "use strict";
 
-  // crop rect within the 1800x1004 source photo — tight around the truck
-  // itself so as little as possible of ITS OWN background (a different
-  // city skyline) shows up next to the Old San Juan street behind it
-  var CROP = { x: 90, y: 90, w: 1650, h: 870 };
-  var PLANE_ASPECT = CROP.w / CROP.h;
+  var PLANE_ASPECT = 1200 / 670;
   var PLANE_WIDTH = 6.4;
   var PLANE_HEIGHT = PLANE_WIDTH / PLANE_ASPECT;
   var PLANE_ROTATION_Y = 0.3; // radians — angles the photo in 3D so the camera's approach reads as real depth, not a flat billboard
 
-  // serving window's position as a fraction of the CROPPED frame
-  var WINDOW_FRACTION = { x: 0.251, y: 0.3 };
-
-  function loadFeatheredTexture(url, onReady) {
-    var img = new Image();
-    img.onload = function () {
-      var w = CROP.w, h = CROP.h;
-      var canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-      var ctx = canvas.getContext("2d");
-      ctx.drawImage(img, CROP.x, CROP.y, w, h, 0, 0, w, h);
-
-      // feather a thin rectangular border to transparent so the photo's
-      // edge dissolves into the scene instead of reading as a sticker —
-      // a circular vignette was tried first but washed out the whole
-      // truck on a frame this wide, so this fades only the true edges
-      ctx.globalCompositeOperation = "destination-in";
-      var margin = 0.05;
-      var gx = ctx.createLinearGradient(0, 0, w, 0);
-      gx.addColorStop(0, "rgba(255,255,255,0)");
-      gx.addColorStop(margin, "rgba(255,255,255,1)");
-      gx.addColorStop(1 - margin, "rgba(255,255,255,1)");
-      gx.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = gx;
-      ctx.fillRect(0, 0, w, h);
-      var gy = ctx.createLinearGradient(0, 0, 0, h);
-      gy.addColorStop(0, "rgba(255,255,255,0)");
-      gy.addColorStop(margin, "rgba(255,255,255,1)");
-      gy.addColorStop(1 - margin, "rgba(255,255,255,1)");
-      gy.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = gy;
-      ctx.fillRect(0, 0, w, h);
-      ctx.globalCompositeOperation = "source-over";
-
-      var tex = new THREE.CanvasTexture(canvas);
-      if ("colorSpace" in tex) tex.colorSpace = THREE.SRGBColorSpace;
-      else tex.encoding = THREE.sRGBEncoding;
-      tex.needsUpdate = true;
-      onReady(tex);
-    };
-    img.src = url;
-  }
+  // serving window's position as a fraction of the source image
+  var WINDOW_FRACTION = { x: 0.25, y: 0.33 };
 
   function buildScene(scene, onPlaneReady) {
     var group = new THREE.Group();
@@ -80,7 +36,10 @@
     );
     var normal = new THREE.Vector3(sin, 0, cos); // plane's face normal after the Y rotation
 
-    loadFeatheredTexture("assets/img/food-truck.jpg", function (tex) {
+    var loader = new THREE.TextureLoader();
+    loader.load("assets/img/food-truck-cutout.png", function (tex) {
+      if ("colorSpace" in tex) tex.colorSpace = THREE.SRGBColorSpace;
+      else tex.encoding = THREE.sRGBEncoding;
       var plane = new THREE.Mesh(
         new THREE.PlaneGeometry(PLANE_WIDTH, PLANE_HEIGHT),
         new THREE.MeshBasicMaterial({ map: tex, transparent: true })
