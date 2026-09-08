@@ -1,0 +1,71 @@
+/* ============================================================
+   Purawepa design tokens
+   "Dusk to Window-Light" — two-act color system, one type family
+   ============================================================ */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("../assets/fonts/Archivo-Variable.woff2") format("woff2-variations"),
+       url("../assets/fonts/Archivo-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---- color: brand (constant across both acts) ---- */
+  --red: #e5341e;
+  --red-dark: #b8260f;
+
+  /* ---- color: act 1 — dusk street (dark) ---- */
+  --ink: #130f0c;
+  --ink-raised: #1c1712;
+  --navy: #152447;
+  --navy-bright: #2c4a86;
+  --text-on-ink: #f6f1e7;
+  --text-on-ink-muted: #b6aca0;
+
+  /* ---- color: act 2 — window light (warm/light) ---- */
+  --paper: #fbf7ef;
+  --paper-raised: #f3ecdd;
+  --amber: #f5a623;
+  --amber-dark: #c97e0f;
+  --text-on-paper: #181310;
+  --text-on-paper-muted: #6b6259;
+
+  /* ---- type ---- */
+  --font: "Archivo", system-ui, sans-serif;
+
+  --size-display-xl: clamp(2.75rem, 7vw, 7rem);
+  --size-display-l: clamp(2.25rem, 4.5vw, 4rem);
+  --size-display-m: clamp(1.5rem, 2.4vw, 2rem);
+  --size-body-l: clamp(1.125rem, 1.4vw, 1.375rem);
+  --size-body: clamp(1rem, 1.2vw, 1.125rem);
+  --size-label: 0.75rem;
+
+  --tracking-tight: -0.02em;
+  --tracking-label: 0.14em;
+
+  /* ---- spacing (4px base) ---- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+  --sp-24: 6rem;
+  --sp-32: 8rem;
+  --sp-48: 12rem;
+
+  --section-pad-y: clamp(4rem, 10vw, 12rem);
+  --section-pad-x: clamp(1.25rem, 5vw, 4rem);
+
+  /* ---- shape ---- */
+  --radius: 4px;
+  --radius-pill: 999px;
+
+  /* ---- motion ---- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
