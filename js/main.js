@@ -17,6 +17,48 @@
   });
 
   /* -----------------------------------------------------------
+     Act 2 emerges like it's coming into focus through the window
+     (continuous motion, rather than a hard cut) — skipped for
+     reduced-motion, where the un-animated section is just visible.
+     ----------------------------------------------------------- */
+  if (!reduceMotion) {
+    var menuSection = document.getElementById("menu");
+    gsap.fromTo(menuSection,
+      { scale: 1.06, filter: "blur(6px)" },
+      {
+        scale: 1,
+        filter: "blur(0px)",
+        ease: "power1.out",
+        scrollTrigger: {
+          trigger: menuSection,
+          start: "top bottom",
+          end: "top 60%",
+          scrub: 0.5
+        }
+      }
+    );
+  }
+
+  /* -----------------------------------------------------------
+     menu card hover spotlight — hovered card comes forward,
+     the rest dim back (bianco-bianco-style focus interaction)
+     ----------------------------------------------------------- */
+  var menuGrid = document.querySelector(".menu-grid");
+  if (menuGrid) {
+    var menuCards = menuGrid.querySelectorAll(".menu-card");
+    menuCards.forEach(function (card) {
+      card.addEventListener("mouseenter", function () {
+        menuGrid.classList.add("is-hovering");
+        card.classList.add("is-hovered");
+      });
+      card.addEventListener("mouseleave", function () {
+        menuGrid.classList.remove("is-hovering");
+        card.classList.remove("is-hovered");
+      });
+    });
+  }
+
+  /* -----------------------------------------------------------
      scroll-reveal for everything after the pinned hero
      ----------------------------------------------------------- */
   var revealEls = document.querySelectorAll(".reveal");
@@ -44,8 +86,8 @@
   var bgScene = document.getElementById("bg-scene");
   var windowCover = document.getElementById("truck-window-cover");
 
-  // local center of the serving window within the 600x360 truck-rig art
-  var WX = 410, WY = 190;
+  // local center of the serving window within the 600x335 truck-rig photo
+  var WX = 171, WY = 114;
 
   function frame(scale, targetXRatio, targetYRatio) {
     var vw = window.innerWidth;
@@ -62,9 +104,9 @@
   function computeEndScale() {
     var vw = window.innerWidth;
     var vh = window.innerHeight;
-    var overshoot = 1.15;
-    var scaleForWidth = (vw * overshoot) / 160;
-    var scaleForHeight = (vh * overshoot) / 100;
+    var overshoot = 1.06;
+    var scaleForWidth = (vw * overshoot) / 112;
+    var scaleForHeight = (vh * overshoot) / 78;
     return Math.max(scaleForWidth, scaleForHeight);
   }
 
@@ -80,31 +122,37 @@
       if (st) st.kill();
       gsap.killTweensOf([truckRig, bgScene, windowCover, ".hero-copy", ".scroll-cue"]);
 
-      var start = frame(0.34, 0.66, 0.58);
+      var start = frame(0.48, 0.66, 0.58);
       var end = frame(computeEndScale(), 0.5, 0.5);
 
       gsap.set(truckRig, { x: start.x, y: start.y, scale: start.scale, transformOrigin: "0px 0px" });
       gsap.set(bgScene, { scale: 1, filter: "blur(0px) brightness(1)" });
-      gsap.set(windowCover, { opacity: 0 });
+      gsap.set(windowCover, { opacity: 0, scale: 0.6 });
       gsap.set(".hero-copy, .scroll-cue", { opacity: 1, y: 0 });
 
       var tl = gsap.timeline({ paused: true, defaults: { ease: "none" } });
 
-      tl.to(".hero-copy, .scroll-cue", { opacity: 0, y: -40, duration: 0.10 }, 0.15);
+      tl.to(".hero-copy, .scroll-cue", { opacity: 0, y: -40, duration: 0.12 }, 0.1);
 
       tl.fromTo(truckRig,
         { x: start.x, y: start.y, scale: start.scale },
-        { x: end.x, y: end.y, scale: end.scale, duration: 0.75 },
-        0.15
+        { x: end.x, y: end.y, scale: end.scale, duration: 0.68 },
+        0.1
       );
 
       tl.fromTo(bgScene,
         { scale: 1, filter: "blur(0px) brightness(1)" },
-        { scale: 1.22, filter: "blur(16px) brightness(0.42)", duration: 0.75 },
-        0.15
+        { scale: 1.22, filter: "blur(16px) brightness(0.42)", duration: 0.68 },
+        0.1
       );
 
-      tl.to(windowCover, { opacity: 1, duration: 0.10 }, 0.90);
+      // window cover eases in as an expanding disc (an "iris" opening into
+      // Act 2) rather than a hard rectangle snap — reads as continuous motion
+      tl.fromTo(windowCover,
+        { opacity: 0, scale: 0.6 },
+        { opacity: 1, scale: 1, duration: 0.18, ease: "power1.in" },
+        0.72
+      );
 
       st = ScrollTrigger.create({
         trigger: "#hero-pin",
